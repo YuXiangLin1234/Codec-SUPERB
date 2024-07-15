@@ -5,8 +5,13 @@ from SoundCodec.dataset import load_dataset, apply_audio_cast
 from SoundCodec.dataset.general import extract_unit
 
 
-def run_experiment(dataset_name):
-    cleaned_dataset = load_dataset(dataset_name)
+def run_experiment(dataset_name, sample_num=None):
+    # cleaned_dataset = load_dataset(dataset_name)
+    cleaned_dataset = load_dataset(dataset_name, "zh-TW",  split='test')
+    
+    if sample_num:
+        cleaned_dataset = cleaned_dataset.select([i for i in range(sample_num)])
+
     d_item = next(iter(cleaned_dataset))
     sampling_rate = d_item['audio']['sampling_rate']
     cleaned_dataset = load_dataset(dataset_name)
@@ -15,6 +20,7 @@ def run_experiment(dataset_name):
         lambda x: len(x['audio']['array']) / x['audio']['sampling_rate'] <= args.max_duration)
     print("after filter duration", cleaned_dataset)
     cleaned_dataset = apply_audio_cast(cleaned_dataset, sampling_rate)
+
     if not args.extract_unit_only:
         datasets_dict = DatasetDict({'original': cleaned_dataset})
     else:
@@ -54,7 +60,10 @@ def run_experiment(dataset_name):
     if args.push_to_hub:
         push_to_hub_org = args.upload_name
         if not args.extract_unit_only:
-            datasets_dict_synth.push_to_hub(f"{push_to_hub_org}/{dataset_name}_synth")
+            if args.sample_num:
+                datasets_dict_synth.push_to_hub(f"{push_to_hub_org}/{dataset_name}_synth_{args.sample_num}")
+            else: 
+                datasets_dict_synth.push_to_hub(f"{push_to_hub_org}/{dataset_name}_synth")
         datasets_dict_unit_only.push_to_hub(f"{push_to_hub_org}/{dataset_name}_unit")
 
 
@@ -64,7 +73,8 @@ if __name__ == "__main__":
                         help='Name of the dataset to process in huggingface/datasets')
     parser.add_argument('--extract_unit_only', required=False, action='store_true')
     parser.add_argument('--max_duration', required=False, type=int, default=120)
+    parser.add_argument('--sample_num', required=False, type=int, default=None)
     parser.add_argument('--push_to_hub', required=False, action='store_true')
     parser.add_argument('--upload_name', required=False, default='Evan-Lin')
     args = parser.parse_args()
-    run_experiment(args.dataset)
+    run_experiment(args.dataset, args.sample_num)
