@@ -6,6 +6,10 @@ from SoundCodec.codec import load_codec, list_codec
 # from SoundCodec.dataset import load_dataset
 from SoundCodec.dataset.general import extract_unit, apply_audio_cast
 
+def map_file_to_id(data):
+    data['id'] = "".join(data['path'].split("/")[-1:])
+    return data
+
 
 def run_experiment(dataset_name, sample_num=None):
     # cleaned_dataset = load_dataset(dataset_name)
@@ -15,11 +19,12 @@ def run_experiment(dataset_name, sample_num=None):
 
     d_item = next(iter(cleaned_dataset))
     sampling_rate = d_item['audio']['sampling_rate']
-    cleaned_dataset = cleaned_dataset.rename_column("path", "id")
+    # cleaned_dataset = cleaned_dataset.rename_column("path", "id")
     cleaned_dataset = hf_load_dataset(dataset_name, "zh-TW", split='test')
+    cleaned_dataset = cleaned_dataset.map(map_file_to_id)
     cleaned_dataset = cleaned_dataset.map(lambda example: {"audio": {"path": example["audio"]["path"],
                                                             "sampling_rate": example["audio"]["sampling_rate"],
-                                                            "array": torch.tensor(example["audio"]["array"]) }}
+                                                            "array": torch.from_numpy(example["audio"]["array"]) }}
                                                             , remove_columns=["audio"])
     if sample_num:
         cleaned_dataset = cleaned_dataset.select([i for i in range(sample_num)])
