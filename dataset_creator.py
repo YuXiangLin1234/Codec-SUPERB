@@ -1,14 +1,14 @@
 import argparse
-from datasets import DatasetDict, Audio, load_from_disk, load_dataset
+from datasets import DatasetDict, Audio, load_from_disk
+from datasets import load_dataset as hf_load_dataset
 from SoundCodec.codec import load_codec, list_codec
-# from SoundCodec.dataset import load_dataset
+from SoundCodec.dataset import load_dataset
 from SoundCodec.dataset.general import extract_unit, apply_audio_cast
 
 
 def run_experiment(dataset_name, sample_num=None):
     # cleaned_dataset = load_dataset(dataset_name)
-    cleaned_dataset = load_dataset(dataset_name, "zh-TW",  split='test')
-    
+    cleaned_dataset = hf_load_dataset(dataset_name, "zh-TW", split='test')
     if sample_num:
         cleaned_dataset = cleaned_dataset.select([i for i in range(sample_num)])
 
