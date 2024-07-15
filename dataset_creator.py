@@ -65,6 +65,6 @@ if __name__ == "__main__":
     parser.add_argument('--extract_unit_only', required=False, action='store_true')
     parser.add_argument('--max_duration', required=False, type=int, default=120)
     parser.add_argument('--push_to_hub', required=False, action='store_true')
-    parser.add_argument('--upload_name', required=False, default='Codec-SUPERB')
+    parser.add_argument('--upload_name', required=False, default='Evan-Lin')
     args = parser.parse_args()
     run_experiment(args.dataset)
