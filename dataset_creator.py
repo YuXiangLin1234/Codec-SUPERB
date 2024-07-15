@@ -21,13 +21,15 @@ def run_experiment(dataset_name, sample_num=None):
     sampling_rate = d_item['audio']['sampling_rate']
     # cleaned_dataset = cleaned_dataset.rename_column("path", "id")
     cleaned_dataset = hf_load_dataset(dataset_name, "zh-TW", split='test')
-    cleaned_dataset = cleaned_dataset.map(map_file_to_id)
-    cleaned_dataset = cleaned_dataset.map(lambda example: {"audio": {"path": example["audio"]["path"],
-                                                            "sampling_rate": example["audio"]["sampling_rate"],
-                                                            "array": torch.from_numpy(example["audio"]["array"]) }}
-                                                            , remove_columns=["audio"])
     if sample_num:
         cleaned_dataset = cleaned_dataset.select([i for i in range(sample_num)])
+
+    cleaned_dataset = cleaned_dataset.map(map_file_to_id)
+    # cleaned_dataset = cleaned_dataset.map(lambda example: {"audio": {"path": example["audio"]["path"],
+    #                                                         "sampling_rate": example["audio"]["sampling_rate"],
+    #                                                         "array": torch.from_numpy(example["audio"]["array"]) }}
+    #                                                         , remove_columns=["audio"])
+
 
     print("before filter duration", cleaned_dataset)
     cleaned_dataset = cleaned_dataset.filter(
