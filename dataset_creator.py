@@ -16,9 +16,10 @@ def run_experiment(dataset_name, sample_num=None):
     sampling_rate = d_item['audio']['sampling_rate']
     # cleaned_dataset = hf_load_dataset(dataset_name)
     cleaned_dataset = hf_load_dataset(dataset_name, "zh-TW", split='test')
+    cleaned_dataset =cleaned_dataset.rename_column("path", "id")
     if sample_num:
         cleaned_dataset = cleaned_dataset.select([i for i in range(sample_num)])
-        
+
     print("before filter duration", cleaned_dataset)
     cleaned_dataset = cleaned_dataset.filter(
         lambda x: len(x['audio']['array']) / x['audio']['sampling_rate'] <= args.max_duration)
