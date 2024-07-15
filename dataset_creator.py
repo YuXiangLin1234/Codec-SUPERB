@@ -1,4 +1,5 @@
 import argparse
+import torch
 from datasets import DatasetDict, Audio, load_from_disk
 from datasets import load_dataset as hf_load_dataset
 from SoundCodec.codec import load_codec, list_codec
@@ -14,8 +15,12 @@ def run_experiment(dataset_name, sample_num=None):
 
     d_item = next(iter(cleaned_dataset))
     sampling_rate = d_item['audio']['sampling_rate']
-    # cleaned_dataset = cleaned_dataset.rename_column("path", "id")
+    cleaned_dataset = cleaned_dataset.rename_column("path", "id")
     cleaned_dataset = hf_load_dataset(dataset_name, "zh-TW", split='test')
+    cleaned_dataset = cleaned_dataset.map(lambda example: {"audio": {"path": example["audio"]["path"],
+                                                            "sampling_rate": example["audio"]["sampling_rate"],
+                                                            "array": torch.tensor(example["audio"]["array"]) }}
+                                                            , remove_columns=["audio"])
     if sample_num:
         cleaned_dataset = cleaned_dataset.select([i for i in range(sample_num)])
 
