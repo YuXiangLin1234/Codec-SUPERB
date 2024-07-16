@@ -69,7 +69,7 @@ class BaseCodec:
 	def extract_unit(self, data):
 		audio_sample = data["audio"]["array"]
 		if isinstance(audio_sample, np.ndarray):
-			audio_sample = torch.from_numpy(audio_sample)
+			audio_sample = torch.from_numpy(audio_sample).float()
 
 		audio_sample = audio_sample.unsqueeze(0)
 		print(audio_sample.shape)
