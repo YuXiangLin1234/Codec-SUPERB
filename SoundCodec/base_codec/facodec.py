@@ -21,7 +21,7 @@ class BaseCodec:
 			ngf=32,
 			up_ratios=[2, 4, 5, 5],
 			out_channels=256,
-		)
+		).to("cuda")
 
 		self.decoder = FACodecDecoder(
 			in_channels=256,
@@ -39,7 +39,7 @@ class BaseCodec:
 			use_gr_x_timbre=True,
 			use_gr_residual_f0=True,
 			use_gr_residual_phone=True,
-		)
+		).to("cuda")
 
 		encoder_ckpt = hf_hub_download(repo_id="amphion/naturalspeech3_facodec", filename="ns3_facodec_encoder.bin")
 		decoder_ckpt = hf_hub_download(repo_id="amphion/naturalspeech3_facodec", filename="ns3_facodec_decoder.bin")
@@ -71,6 +71,7 @@ class BaseCodec:
 		audio_sample = data["audio"]["array"]
 		if isinstance(audio_sample, np.ndarray):
 			audio_sample = torch.from_numpy(audio_sample).float()
+		audio_sample = audio_sample.to("cuda")
 
 		audio_sample = audio_sample.unsqueeze(0).unsqueeze(0)
 		print(audio_sample.shape)
