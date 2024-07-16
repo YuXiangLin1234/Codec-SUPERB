@@ -68,9 +68,9 @@ class BaseCodec:
 	@torch.no_grad()
 	def extract_unit(self, data):
 		audio_sample = data["audio"]["array"]
-		if isinstance(wav, np.ndarray):
-			wav = torch.from_numpy(wav)
-			
+		if isinstance(audio_sample, np.ndarray):
+			audio_sample = torch.from_numpy(audio_sample)
+
 		audio_sample = audio_sample.unsqueeze(0)
 		print(audio_sample.shape)
 		print(type(audio_sample))
