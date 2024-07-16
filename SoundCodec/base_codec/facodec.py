@@ -11,6 +11,9 @@ class BaseCodec:
 		except:
 			raise Exception("Please install Amphion first. see https://github.com/open-mmlab/Amphion")
 		
+		self.model_type = "16khz"
+		self.sampling_rate = 16_000	
+
 		self.encoder = FACodecEncoder(
 			ngf=32,
 			up_ratios=[2, 4, 5, 5],
@@ -43,6 +46,7 @@ class BaseCodec:
 
 		self.encoder.eval()
 		self.decoder.eval()
+
 	def config(self):
 		self.model_type = "16khz"
 		self.sampling_rate = 16_000
