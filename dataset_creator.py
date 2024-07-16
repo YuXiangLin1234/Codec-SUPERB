@@ -75,17 +75,17 @@ def run_experiment(dataset_name, sample_num=None):
         else:
             datasets_dict_synth[key] = datasets_dict[key].remove_columns(['unit'])
     if not args.extract_unit_only:
-        datasets_dict_synth.save_to_disk(f"./datasets/{dataset_name}_synth")
+        datasets_dict_synth.save_to_disk(f"./datasets/{dataset_name.split("/")[1]}_synth")
 
     if args.push_to_hub:
         push_to_hub_org = args.upload_name
         if not args.extract_unit_only:
             if args.sample_num:
-                datasets_dict_synth.push_to_hub(f"{push_to_hub_org}/{dataset_name}_synth_{args.sample_num}")
+                datasets_dict_synth.push_to_hub(f"{push_to_hub_org}/{dataset_name.split("/")[1]}_synth_{args.sample_num}")
             else: 
-                datasets_dict_synth.push_to_hub(f"{push_to_hub_org}/{dataset_name}_synth")
+                datasets_dict_synth.push_to_hub(f"{push_to_hub_org}/{dataset_name.split("/")[1]}_synth")
 
-        datasets_dict_unit_only.push_to_hub(f"{push_to_hub_org}/{dataset_name}_unit")
+        datasets_dict_unit_only.push_to_hub(f"{push_to_hub_org}/{dataset_name.split("/")[1]}_unit")
 
 
 if __name__ == "__main__":
