@@ -42,9 +42,14 @@ def run_experiment(dataset_name, sample_num=None):
     else:
         datasets_dict = DatasetDict({})
     all_codec_name = list_codec()
-    all_codec_name = ["dac_16k", "dac_24k", "dac_44k", "speech_tokenizer_16k", "encodec_24k_3bps", "encodec_24k_6bps", "encodec_24k_12bps", "facodec_16k"]
+    if args.codec_list is None:
+        all_codec_name = ["dac_16k", "dac_24k", "dac_44k", "speech_tokenizer_16k", "encodec_24k_3bps", "encodec_24k_6bps", "encodec_24k_12bps", "facodec_16k"]
+    else: 
+        all_codec_name = args.codec_list
+    
     # for codec_name in all_codec_name[:len(all_codec_name) // 2]:
     # for codec_name in all_codec_name[len(all_codec_name) // 2:]:
+
     for codec_name in all_codec_name:
         print(f"Synthesizing dataset with {codec_name}")
         # load from disk if already synthesized
@@ -97,5 +102,6 @@ if __name__ == "__main__":
     parser.add_argument('--sample_num', required=False, type=int, default=None)
     parser.add_argument('--push_to_hub', required=False, action='store_true')
     parser.add_argument('--upload_name', required=False, default='Evan-Lin')
+    parser.add_argument('-l', '--codec_list', nargs='+', default=None)
     args = parser.parse_args()
     run_experiment(args.dataset, args.sample_num)
