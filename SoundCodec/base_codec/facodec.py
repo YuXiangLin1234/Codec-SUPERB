@@ -13,6 +13,7 @@ class BaseCodec:
 		except:
 			raise Exception("Please install Amphion first. see https://github.com/open-mmlab/Amphion")
 		
+		self.model_name = "facodec_16khz"
 		self.model_type = "16khz"
 		self.sampling_rate = 16_000	
 
@@ -58,7 +59,7 @@ class BaseCodec:
 		data['unit'] = extracted_unit.unit
 		audio_values = self.decode_unit(extracted_unit.stuff_for_synth)
 		if local_save:
-			audio_path = f"dummy_{self.pretrained_model_name}/{data['id']}.wav"
+			audio_path = f"dummy_{self.model_name}/{data['id']}.wav"
 			save_audio(audio_values, audio_path, self.sampling_rate)
 			data['audio'] = audio_path
 		else:
