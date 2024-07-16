@@ -67,6 +67,7 @@ class BaseCodec:
         for y, code in enumerate(codes):
             codes[y] += int(y * codebook_size)
         codes = codes.squeeze(0)
+        print(codes.shape)
         return ExtractedUnit(
             unit=codes,
             stuff_for_synth=(zq, codes)

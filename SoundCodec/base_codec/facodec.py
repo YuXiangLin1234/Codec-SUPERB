@@ -72,12 +72,17 @@ class BaseCodec:
 		if isinstance(audio_sample, np.ndarray):
 			audio_sample = torch.from_numpy(audio_sample).float()
 		audio_sample = audio_sample.to("cuda")
-
 		audio_sample = audio_sample.unsqueeze(0).unsqueeze(0)
 		print(audio_sample.shape)
 		print(type(audio_sample))
 		enc_out = self.encoder(audio_sample)
 		vq_post_emb, vq_id, _, quantized, spk_embs = self.decoder(enc_out, eval_vq=False, vq=True)
+
+		# vq id shape: torch.Size([6, 1, 628])
+		# prosody code shape: torch.Size([1, 1, 628])
+		# content code shape: torch.Size([2, 1, 628])
+		# residual code shape: torch.Size([3, 1, 628])
+		# speaker embedding shape: torch.Size([1, 256])
 		# get prosody code
 		prosody_code = vq_id[:1]
 		print("prosody code shape:", prosody_code.shape)
