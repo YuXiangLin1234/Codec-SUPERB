@@ -101,7 +101,7 @@ def evaluate_dataset(dataset_name, is_stream, specific_models=None, max_duration
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Evaluate audio datasets.')
-    parser.add_argument('--dataset', type=str, default="Codec-SUPERB/librispeech_asr_dummy_synth",
+    parser.add_argument('--dataset', type=str, default="Evan-Lin/common_voice_11_0_synth_100",
                         help='Name of the dataset to evaluate')
     parser.add_argument('--streaming', action='store_true', help='Evaluate in streaming mode')
     parser.add_argument('--batch', type=int, default=100,
