@@ -1,4 +1,4 @@
-from SoundCodec.base_codec.descript_audio_codec import BaseCodec
+from SoundCodec.base_codec.facodec import BaseCodec
 
 
 class Codec(BaseCodec):
