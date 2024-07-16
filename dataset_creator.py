@@ -42,6 +42,7 @@ def run_experiment(dataset_name, sample_num=None):
     else:
         datasets_dict = DatasetDict({})
     all_codec_name = list_codec()
+    all_codec_name = ["dac_16k", "dac_24k", "dac_44k", "speech_tokenizer_16k", "encodec_24k_3bps", "encodec_24k_6bps", "encodec_24k_12bps", "facodec_16k"]
     # for codec_name in all_codec_name[:len(all_codec_name) // 2]:
     # for codec_name in all_codec_name[len(all_codec_name) // 2:]:
     for codec_name in all_codec_name:
