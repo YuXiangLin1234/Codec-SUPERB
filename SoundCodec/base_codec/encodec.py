@@ -57,4 +57,5 @@ class BaseCodec:
             self.model.decode(encoded_frames)[0]
         # trim the audio to the same length as the input
         audio_values = audio_values[:, :original_shape].cpu().numpy()
+        print("encodec output shape: ", audio_values.shape)
         return audio_values

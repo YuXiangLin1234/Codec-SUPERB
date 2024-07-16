@@ -90,4 +90,5 @@ class BaseCodec:
 	def decode_unit(self, stuff_for_synth):
 		vq_post_emb, spk_embs = stuff_for_synth
 		audio_values = self.decoder.inference(vq_post_emb, spk_embs)
+		print("facodec output shape:", audio_values.shape)
 		return audio_values[0].cpu().numpy()
