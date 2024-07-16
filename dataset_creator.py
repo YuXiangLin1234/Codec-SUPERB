@@ -41,11 +41,11 @@ def run_experiment(dataset_name, sample_num=None):
         datasets_dict = DatasetDict({'original': cleaned_dataset})
     else:
         datasets_dict = DatasetDict({})
-    for codec_name in list_codec():
-    # for i in range(1):
-        print(codec_name)
-        continue
-        # codec_name = 
+    # for codec_name in list_codec():
+    for i in range(1):
+        # print(codec_name)
+        # continue
+        codec_name = "facodec_16k"
         print(f"Synthesizing dataset with {codec_name}")
         # load from disk if already synthesized
         try:
