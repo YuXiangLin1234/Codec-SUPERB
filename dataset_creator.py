@@ -10,26 +10,19 @@ def map_file_to_id(data):
     data['id'] = "".join(data['path'].split("/")[-1:])
     return data
 
-
 def run_experiment(dataset_name, sample_num=None):
-    # cleaned_dataset = load_dataset(dataset_name)
+
     cleaned_dataset = hf_load_dataset(dataset_name, "zh-TW", split='test')
     if sample_num:
         cleaned_dataset = cleaned_dataset.select([i for i in range(sample_num)])
 
     d_item = next(iter(cleaned_dataset))
     sampling_rate = d_item['audio']['sampling_rate']
-    # cleaned_dataset = cleaned_dataset.rename_column("path", "id")
     cleaned_dataset = hf_load_dataset(dataset_name, "zh-TW", split='test')
     if sample_num:
         cleaned_dataset = cleaned_dataset.select([i for i in range(sample_num)])
 
     cleaned_dataset = cleaned_dataset.map(map_file_to_id)
-    # cleaned_dataset = cleaned_dataset.map(lambda example: {"audio": {"path": example["audio"]["path"],
-    #                                                         "sampling_rate": example["audio"]["sampling_rate"],
-    #                                                         "array": torch.from_numpy(example["audio"]["array"]) }}
-    #                                                         , remove_columns=["audio"])
-
 
     print("before filter duration", cleaned_dataset)
     cleaned_dataset = cleaned_dataset.filter(
@@ -46,9 +39,6 @@ def run_experiment(dataset_name, sample_num=None):
         all_codec_name = ["dac_16k", "dac_24k", "dac_44k", "speech_tokenizer_16k", "encodec_24k_3bps", "encodec_24k_6bps", "encodec_24k_12bps", "facodec_16k"]
     else: 
         all_codec_name = args.codec_list
-    
-    # for codec_name in all_codec_name[:len(all_codec_name) // 2]:
-    # for codec_name in all_codec_name[len(all_codec_name) // 2:]:
 
     for codec_name in all_codec_name:
         print(f"Synthesizing dataset with {codec_name}")
