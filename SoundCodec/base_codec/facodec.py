@@ -71,7 +71,7 @@ class BaseCodec:
 		if isinstance(audio_sample, np.ndarray):
 			audio_sample = torch.from_numpy(audio_sample).float()
 
-		audio_sample = audio_sample.unsqueeze(0)
+		audio_sample = audio_sample.unsqueeze(0).unsqueeze(0)
 		print(audio_sample.shape)
 		print(type(audio_sample))
 		enc_out = self.encoder(audio_sample)
