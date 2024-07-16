@@ -43,7 +43,9 @@ class BaseCodec:
 
 		self.encoder.eval()
 		self.decoder.eval()
-
+	def config(self):
+		self.model_type = "16khz"
+		self.sampling_rate = 16_000
 	@torch.no_grad()
 	def synth(self, data, local_save=True):
 		extracted_unit = self.extract_unit(data)
