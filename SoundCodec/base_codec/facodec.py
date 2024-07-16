@@ -66,7 +66,9 @@ class BaseCodec:
 	@torch.no_grad()
 	def extract_unit(self, data):
 		audio_sample = data["audio"]["array"]
+		audio_sample = audio_sample.unsqueeze(0)
 		print(audio_sample.shape)
+		print(type(audio_sample))
 		enc_out = self.encoder(audio_sample)
 		vq_post_emb, vq_id, _, quantized, spk_embs = self.decoder(enc_out, eval_vq=False, vq=True)
 		# get prosody code
