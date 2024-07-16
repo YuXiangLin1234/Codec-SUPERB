@@ -35,8 +35,11 @@ def save_audio(wav: torch.Tensor, path, sample_rate: int, rescale: bool = False)
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
     limit = 0.99
+    
     # TODO the input wav is a numpy array
-    wav = torch.from_numpy(wav)
+    if isinstance(wav, np.ndarray):
+        wav = torch.from_numpy(wav)
+    
     max_val = wav.abs().max()
 
     # max_val = max(abs(wav))
