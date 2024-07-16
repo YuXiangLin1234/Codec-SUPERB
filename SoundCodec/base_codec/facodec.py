@@ -102,7 +102,7 @@ class BaseCodec:
 		# padding_mask = inputs["padding_mask"].to(self.device) if inputs["padding_mask"] is not None else None
 		# encoder_outputs = self.model.encode(input_values, padding_mask)
 		return ExtractedUnit(
-			unit=vq_id,
+			unit=vq_id.squeeze(1),
 			stuff_for_synth=(vq_post_emb, spk_embs)
 		)
 
