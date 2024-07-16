@@ -42,6 +42,10 @@ def run_experiment(dataset_name, sample_num=None):
     else:
         datasets_dict = DatasetDict({})
     for codec_name in list_codec():
+    # for i in range(1):
+        print(codec_name)
+        continue
+        # codec_name = 
         print(f"Synthesizing dataset with {codec_name}")
         # load from disk if already synthesized
         try:

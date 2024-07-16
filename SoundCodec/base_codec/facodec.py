@@ -1,18 +1,23 @@
 import torch
 from transformers import AutoModel, AutoProcessor
 from SoundCodec.base_codec.general import save_audio, ExtractedUnit
-from ns3_codec import FACodecEncoder, FACodecDecoder
+
 from huggingface_hub import hf_hub_download
 
 class BaseCodec:
 	def __init__(self):
-		self.fa_encoder = FACodecEncoder(
+		try:
+			from ns3_codec import FACodecEncoder, FACodecDecoder
+		except:
+			raise Exception("Please install Amphion first. see https://github.com/open-mmlab/Amphion")
+		
+		self.encoder = FACodecEncoder(
 			ngf=32,
 			up_ratios=[2, 4, 5, 5],
 			out_channels=256,
 		)
 
-		self.fa_decoder = FACodecDecoder(
+		self.decoder = FACodecDecoder(
 			in_channels=256,
 			upsample_initial_channel=1024,
 			ngf=32,
@@ -33,11 +38,11 @@ class BaseCodec:
 		encoder_ckpt = hf_hub_download(repo_id="amphion/naturalspeech3_facodec", filename="ns3_facodec_encoder.bin")
 		decoder_ckpt = hf_hub_download(repo_id="amphion/naturalspeech3_facodec", filename="ns3_facodec_decoder.bin")
 
-		self.fa_encoder.load_state_dict(torch.load(encoder_ckpt))
-		self.fa_decoder.load_state_dict(torch.load(decoder_ckpt))
+		self.encoder.load_state_dict(torch.load(encoder_ckpt))
+		self.decoder.load_state_dict(torch.load(decoder_ckpt))
 
-		self.fa_encoder.eval()
-		self.fa_decoder.eval()
+		self.encoder.eval()
+		self.decoder.eval()
 
 	@torch.no_grad()
 	def synth(self, data, local_save=True):
@@ -55,18 +60,34 @@ class BaseCodec:
 	@torch.no_grad()
 	def extract_unit(self, data):
 		audio_sample = data["audio"]["array"]
-		inputs = self.processor(raw_audio=audio_sample, sampling_rate=self.sampling_rate, return_tensors="pt")
-		input_values = inputs["input_values"].to(self.device)
-		padding_mask = inputs["padding_mask"].to(self.device) if inputs["padding_mask"] is not None else None
-		encoder_outputs = self.model.encode(input_values, padding_mask)
+		print(audio_sample.shape)
+		enc_out = self.encoder(audio_sample)
+		vq_post_emb, vq_id, _, quantized, spk_embs = self.decoder(enc_out, eval_vq=False, vq=True)
+		# get prosody code
+		prosody_code = vq_id[:1]
+		print("prosody code shape:", prosody_code.shape)
+		
+		# get content code
+		cotent_code = vq_id[1:3]
+		print("content code shape:", cotent_code.shape)
+		
+		# get residual code (acoustic detail codes)
+		residual_code = vq_id[3:]
+		print("residual code shape:", residual_code.shape)
+
+		# speaker embedding
+		print("speaker embedding shape:", spk_embs.shape)
+		# inputs = self.processor(raw_audio=audio_sample, sampling_rate=self.sampling_rate, return_tensors="pt")
+		# input_values = inputs["input_values"].to(self.device)
+		# padding_mask = inputs["padding_mask"].to(self.device) if inputs["padding_mask"] is not None else None
+		# encoder_outputs = self.model.encode(input_values, padding_mask)
 		return ExtractedUnit(
-			unit=encoder_outputs.audio_codes.squeeze(),
-			stuff_for_synth=(encoder_outputs, padding_mask)
+			unit=vq_id,
+			stuff_for_synth=(vq_post_emb, spk_embs)
 		)
 
 	@torch.no_grad()
 	def decode_unit(self, stuff_for_synth):
-		encoder_outputs, padding_mask = stuff_for_synth
-		audio_values = \
-			self.model.decode(encoder_outputs.audio_codes, encoder_outputs.audio_scales, padding_mask)[0]
+		vq_post_emb, spk_embs = stuff_for_synth
+		audio_values = self.decoder.inference(vq_post_emb, spk_embs)
 		return audio_values[0].cpu().numpy()
