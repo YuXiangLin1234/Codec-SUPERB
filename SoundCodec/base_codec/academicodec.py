@@ -62,6 +62,7 @@ class BaseCodec:
         wav = torch.tensor(wav, dtype=torch.float32)
         wav = wav.unsqueeze(0).to(self.device)
         acoustic_token = self.model.encode(wav)
+        print(acoustic_token.squeeze(0).permute(1, 0).shape)
         return ExtractedUnit(
             unit=acoustic_token.squeeze(0).permute(1, 0),
             stuff_for_synth=acoustic_token
