@@ -1,3 +1,5 @@
+import numpy as np
+
 import torch
 from transformers import AutoModel, AutoProcessor
 from SoundCodec.base_codec.general import save_audio, ExtractedUnit
@@ -66,6 +68,9 @@ class BaseCodec:
 	@torch.no_grad()
 	def extract_unit(self, data):
 		audio_sample = data["audio"]["array"]
+		if isinstance(wav, np.ndarray):
+			wav = torch.from_numpy(wav)
+			
 		audio_sample = audio_sample.unsqueeze(0)
 		print(audio_sample.shape)
 		print(type(audio_sample))
